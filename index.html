@@ -12,6 +12,9 @@
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image-aframe.prod.js"></script>
   
+  <!-- Componente de modelo fallback para planetas -->
+  <script src="assets/models/jupiter-fallback.js"></script>
+  
   <!-- Carrega o script principal -->
   <script src="main.js" defer></script>
 </head>
@@ -28,15 +31,30 @@
       Aguardando reconhecimento de Júpiter...
     </div>
     
-    <!-- Botão de teste para simular detecção -->
+    <!-- Botões de debugging -->
     <div class="debug-controls">
       <button id="test-detection">Testar Detecção (Júpiter)</button>
+      <button id="toggle-model">Alternar Modelo 3D</button>
+      <a href="guide.html" class="link-button">Guia de Ajuda</a>
+    </div>
+    
+    <!-- Aviso sobre arquivos ausentes -->
+    <div id="missing-files-warning" class="warning-box">
+      <p>Verifique se os arquivos necessários estão presentes:</p>
+      <ul id="missing-files-list"></ul>
     </div>
   </div>
   
   <!-- Cena A-Frame para AR -->
   <a-scene
-    mindar-image="imageTargetSrc: targets/jupiter.mind; autoStart: true; uiScanning: true; maxTrack: 1;"
+    mindar-image="imageTargetSrc: targets/jupiter.mind; 
+                 autoStart: true; 
+                 uiScanning: true; 
+                 maxTrack: 1;
+                 warmupTolerance: 5;
+                 missTolerance: 5;
+                 filterMinCF: 0.001;
+                 filterBeta: 1000;"
     color-space="sRGB"
     renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
     vr-mode-ui="enabled: false"
@@ -45,22 +63,91 @@
     <!-- Câmera com componente raycaster para interação -->
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     
-    <!-- Entidade para Júpiter -->
+    <!-- Entidade para Júpiter - usando tanto modelo GLB quanto fallback -->
     <a-entity mindar-image-target="targetIndex: 0">
-      <a-gltf-model id="jupiter-model" position="0 0 0" rotation="0 0 0" scale="0.7 0.7 0.7" src="assets/models/jupiter.glb"></a-gltf-model>
+      <!-- Modelo GLB principal (pode ser substituído por fallback) -->
+      <a-gltf-model id="jupiter-model" position="0 0 0" rotation="0 0 0" scale="0.7 0.7 0.7" src="assets/models/jupiter.glb" visible="true"></a-gltf-model>
+      
+      <!-- Fallback para quando o modelo não carrega -->
+      <a-sphere id="jupiter-fallback" position="0 0 0" radius="0.5" color="#E39E54" segments-height="32" segments-width="32" visible="false">
+        <!-- Linhas para simular os padrões do planeta -->
+        <a-torus position="0 0 0" rotation="90 0 0" radius="0.55" radius-tubular="0.01" color="#C88B3C" segments-tubular="32"></a-torus>
+        <a-torus position="0 0 0" rotation="45 0 0" radius="0.53" radius-tubular="0.01" color="#C88B3C" segments-tubular="32"></a-torus>
+        <a-torus position="0 0 0" rotation="135 0 0" radius="0.51" radius-tubular="0.01" color="#C88B3C" segments-tubular="32"></a-torus>
+        
+        <!-- Mancha vermelha simulada -->
+        <a-circle position="0.3 0.2 0.4" rotation="0 -30 0" radius="0.1" color="#AA4444"></a-circle>
+      </a-sphere>
     </a-entity>
-    
-    <!-- Comentado para implementação futura
-    <a-entity mindar-image-target="targetIndex: 1">
-      <a-gltf-model id="mercurio-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/mercury.glb"></a-gltf-model>
-    </a-entity>
-    
-    <a-entity mindar-image-target="targetIndex: 2">
-      <a-gltf-model id="venus-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/venus.glb"></a-gltf-model>
-    </a-entity>
-    
-    E assim por diante para outros planetas...
-    -->
   </a-scene>
+  
+  <!-- Para testes e debug quando não há acesso à câmera -->
+  <script>
+    // Verificação rápida de arquivos críticos
+    window.addEventListener('load', function() {
+      const filesToCheck = [
+        { path: 'targets/jupiter.mind', name: 'Arquivo de marcador (jupiter.mind)', required: true },
+        { path: 'assets/models/jupiter.glb', name: 'Modelo 3D de Júpiter (jupiter.glb)', required: false }
+      ];
+      
+      const missingFilesList = document.getElementById('missing-files-list');
+      let hasMissingRequired = false;
+      
+      filesToCheck.forEach(file => {
+        fetch(file.path)
+          .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response.blob();
+          })
+          .then(blob => {
+            if (blob.size === 0) {
+              throw new Error('Arquivo vazio');
+            }
+            // Arquivo existe e não está vazio
+          })
+          .catch(error => {
+            console.error(`Erro ao carregar ${file.path}:`, error);
+            const li = document.createElement('li');
+            li.textContent = `${file.name} - ${error.message || 'Não encontrado'}`;
+            li.style.color = file.required ? 'red' : 'orange';
+            missingFilesList.appendChild(li);
+            
+            if (file.required) hasMissingRequired = true;
+            
+            // Se for o modelo 3D faltando, ativar o fallback
+            if (file.path.includes('jupiter.glb')) {
+              toggleModelVisibility(false);
+            }
+          });
+      });
+      
+      // Mostrar ou ocultar o aviso com base nos resultados
+      setTimeout(() => {
+        const warningBox = document.getElementById('missing-files-warning');
+        warningBox.style.display = missingFilesList.children.length > 0 ? 'block' : 'none';
+        
+        if (hasMissingRequired) {
+          warningBox.classList.add('critical');
+        }
+      }, 2000);
+    });
+    
+    // Função para alternar entre modelo GLB e fallback
+    function toggleModelVisibility(showGLB = null) {
+      const glbModel = document.getElementById('jupiter-model');
+      const fallbackModel = document.getElementById('jupiter-fallback');
+      
+      // Se showGLB for definido, use-o. Caso contrário, alterne
+      const showGLBModel = showGLB !== null ? showGLB : (fallbackModel.getAttribute('visible') === 'true');
+      
+      glbModel.setAttribute('visible', showGLBModel);
+      fallbackModel.setAttribute('visible', !showGLBModel);
+      
+      console.log(`Alternou para ${showGLBModel ? 'GLB' : 'fallback'}`);
+    }
+    
+    // Botão para alternar entre modelo GLB e fallback
+    document.getElementById('toggle-model').addEventListener('click', () => toggleModelVisibility());
+  </script>
 </body>
 </html>

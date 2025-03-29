@@ -30,11 +30,14 @@ const detectionStatusElement = document.getElementById('detection-status');
 // Variáveis de estado
 let arSystem = null;
 let isMarkerDetectionEnabled = true;
+let detectionStartTime = null;
+let hasDetectedAnyMarker = false;
 
 // Função para inicializar quando o documento estiver carregado
 document.addEventListener('DOMContentLoaded', () => {
   // Inicializando o sistema de AR
   console.log("Sistema AR de Planetas inicializado");
+  detectionStartTime = Date.now();
 
   // Aguardar o carregamento completo da cena AR
   const sceneEl = document.querySelector('a-scene');
@@ -47,6 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('AR está pronto!');
       detectionStatusElement.textContent = 'AR pronta - aponte para Júpiter';
       detectionStatusElement.classList.add('ready');
+      
+      // Verificar estado do arquivo .mind
+      checkMindFile();
     });
 
     arSystem.el.addEventListener('arError', (error) => {
@@ -54,6 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
       detectionStatusElement.textContent = 'Erro na AR: Verifique permissões de câmera';
       detectionStatusElement.classList.add('error');
     });
+    
+    // Cria um timer para verificar se algum marcador foi detectado após um tempo
+    setTimeout(() => {
+      if (!hasDetectedAnyMarker) {
+        console.warn("Nenhum marcador detectado após 30 segundos");
+        detectionStatusElement.textContent = 'Nenhum marcador detectado. Verifique o arquivo .mind e a imagem do marcador.';
+        detectionStatusElement.classList.add('warning');
+      }
+    }, 30000);
   });
   
   // Configurando listeners para detecção dos planetas
@@ -65,8 +80,36 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePlanetInfo(0); // Simula a detecção de Júpiter (índice 0 no array simplificado)
     detectionStatusElement.textContent = 'Detecção simulada: Júpiter';
     detectionStatusElement.classList.add('detected');
+    hasDetectedAnyMarker = true;
   });
 });
+
+// Verificar estado do arquivo .mind
+function checkMindFile() {
+  // Verificar se o arquivo .mind está presente e não vazio
+  fetch('targets/jupiter.mind')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      if (blob.size === 0) {
+        console.error('Arquivo jupiter.mind está vazio!');
+        detectionStatusElement.textContent = 'Erro: arquivo jupiter.mind está vazio';
+        detectionStatusElement.classList.add('error');
+        return;
+      }
+      
+      console.log(`Arquivo jupiter.mind carregado (${blob.size} bytes)`);
+    })
+    .catch(error => {
+      console.error('Erro ao carregar jupiter.mind:', error);
+      detectionStatusElement.textContent = 'Erro ao carregar arquivo de marcador';
+      detectionStatusElement.classList.add('error');
+    });
+}
 
 // Configurar eventos de detecção de marcadores
 function setupPlanetDetection() {
@@ -74,17 +117,25 @@ function setupPlanetDetection() {
   const jupiterEntity = document.querySelector('[mindar-image-target="targetIndex: 0"]');
   
   if (jupiterEntity) {
+    console.log("Entidade de marcador para Júpiter configurada");
+    
     // Quando Júpiter é detectado
     jupiterEntity.addEventListener('targetFound', () => {
-      console.log(`Planeta detectado: ${planetData[0].name}`);
+      console.log(`Planeta detectado: ${planetData[0].name} (depois de ${(Date.now() - detectionStartTime) / 1000} segundos)`);
       detectionStatusElement.textContent = `Planeta detectado: ${planetData[0].name}`;
       detectionStatusElement.classList.add('detected');
       updatePlanetInfo(0);
+      hasDetectedAnyMarker = true;
       
-      // Adicionar animação ao modelo 3D
-      const model = jupiterEntity.querySelector('a-gltf-model');
-      if (model) {
-        model.setAttribute('animation', {
+      // Adicionar animação ao modelo 3D visível (seja o GLB ou o fallback)
+      const glbModel = jupiterEntity.querySelector('#jupiter-model');
+      const fallbackModel = jupiterEntity.querySelector('#jupiter-fallback');
+      
+      const modelToAnimate = glbModel.getAttribute('visible') === true ? 
+        glbModel : fallbackModel;
+      
+      if (modelToAnimate) {
+        modelToAnimate.setAttribute('animation', {
           property: 'rotation',
           to: '0 360 0',
           dur: 10000,
@@ -101,23 +152,9 @@ function setupPlanetDetection() {
       detectionStatusElement.classList.remove('detected');
       resetPlanetInfo();
     });
+  } else {
+    console.error("Entidade de marcador para Júpiter não encontrada!");
   }
-  
-  // Código comentado para adição futura de outros planetas
-  /*
-  // Adicionar eventos para cada entidade de destino de imagem MindAR
-  for (let i = 0; i < planetData.length; i++) {
-    const targetEntity = document.querySelector(`[mindar-image-target="targetIndex: ${i}"]`);
-    
-    if (targetEntity) {
-      // Quando um planeta é detectado
-      targetEntity.addEventListener('targetFound', () => {...});
-      
-      // Quando um planeta é perdido de vista
-      targetEntity.addEventListener('targetLost', () => {...});
-    }
-  }
-  */
 }
 
 // Função para atualizar as informações do planeta

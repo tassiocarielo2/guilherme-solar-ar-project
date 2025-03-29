@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerar Arquivo .mind para MindAR</title>
+  <style>
+    * {
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #1a73e8;
+    }
+    ol {
+      margin-left: 20px;
+      line-height: 1.6;
+    }
+    .step {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .warning {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0d47a1;
+    }
+    a.button {
+      display: inline-block;
+      text-decoration: none;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .image-container {
+      margin: 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .image-preview {
+      max-width: 200px;
+      max-height: 200px;
+      margin-right: 10px;
+      border: 2px solid #ddd;
+    }
+    .progress {
+      margin-top: 10px;
+      height: 20px;
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: #4caf50;
+      transition: width 0.3s;
+      text-align: center;
+      line-height: 20px;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Arquivos .mind para MindAR</h1>
+    <p>Esta ferramenta ajuda a criar arquivos .mind para uso com a biblioteca MindAR.js diretamente no navegador.</p>
+    
+    <div class="warning">
+      <strong>Importante:</strong> Para resultados melhores, use imagens com contraste alto, muitos detalhes e padrões distintos.
+      Fotografias de objetos reais/brinquedos funcionam melhor do que imagens simples ou ilustrações.
+    </div>
+    
+    <div class="step">
+      <h2>1. Selecione as imagens dos planetas</h2>
+      <p>Escolha fotos claras dos planetas que você quer reconhecer. Cada arquivo será um marcador diferente.</p>
+      <input type="file" id="imageInput" accept="image/*" multiple>
+      <div class="image-container" id="imagePreviewContainer"></div>
+    </div>
+    
+    <div class="step">
+      <h2>2. Gerar o arquivo .mind</h2>
+      <p>Clique no botão abaixo para compilar as imagens e criar o arquivo .mind. 
+        <strong>Atenção:</strong> Esse processo pode demorar alguns minutos dependendo do número e tamanho das imagens.</p>
+      <button id="generateButton" disabled>Gerar arquivo .mind</button>
+      <div class="progress" id="progressContainer" style="display: none;">
+        <div class="progress-bar" id="progressBar">0%</div>
+      </div>
+      <p id="statusText"></p>
+    </div>
+    
+    <div class="step">
+      <h2>3. Baixar e usar o arquivo</h2>
+      <p>Após a compilação, faça o download do arquivo .mind e coloque-o na pasta "targets" do seu projeto.</p>
+      <a id="downloadLink" style="display: none;" class="button">Baixar arquivo .mind</a>
+      <p id="instructionText" style="display: none;">
+        Após baixar, coloque o arquivo em <code>targets/jupiter.mind</code> e atualize o seu index.html para apontar para este arquivo.
+      </p>
+    </div>
+  </div>
+
+  <!-- Biblioteca MindAR para compilação -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image.prod.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const imageInput = document.getElementById('imageInput');
+      const generateButton = document.getElementById('generateButton');
+      const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+      const statusText = document.getElementById('statusText');
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      const downloadLink = document.getElementById('downloadLink');
+      const instructionText = document.getElementById('instructionText');
+      
+      let selectedImages = [];
+      
+      // Quando o usuário seleciona imagens
+      imageInput.addEventListener('change', (event) => {
+        const files = event.target.files;
+        
+        if (files.length === 0) {
+          generateButton.disabled = true;
+          return;
+        }
+        
+        // Limpar previews anteriores
+        imagePreviewContainer.innerHTML = '';
+        selectedImages = [];
+        
+        // Mostrar previews e armazenar as imagens
+        for (const file of files) {
+          if (!file.type.startsWith('image/')) continue;
+          
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'image-preview';
+            imagePreviewContainer.appendChild(img);
+            
+            // Armazenar a imagem para compilação
+            selectedImages.push({
+              url: e.target.result,
+              name: file.name
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+        
+        generateButton.disabled = false;
+      });
+      
+      // Quando o usuário clica para gerar o arquivo .mind
+      generateButton.addEventListener('click', async () => {
+        if (selectedImages.length === 0) {
+          alert('Selecione pelo menos uma imagem de planeta primeiro!');
+          return;
+        }
+        
+        generateButton.disabled = true;
+        progressContainer.style.display = 'block';
+        statusText.textContent = 'Compilando imagens... Isso pode levar alguns minutos.';
+        
+        try {
+          // Configurar o compilador MindAR
+          const compiler = new window.MINDAR.IMAGE.Compiler();
+          
+          // Compilar as imagens
+          const progressCallback = (progress) => {
+            const percent = Math.floor(progress * 100);
+            progressBar.style.width = `${percent}%`;
+            progressBar.textContent = `${percent}%`;
+          };
+          
+          // Extrair URLs das imagens
+          const imageURLs = selectedImages.map(img => img.url);
+          
+          // Compilar (este processo pode demorar)
+          const dataBuffer = await compiler.compileImageTargets(imageURLs, progressCallback);
+          
+          // Criar um blob e um link de download
+          const mindBlob = new Blob([dataBuffer], { type: 'application/octet-stream' });
+          const url = URL.createObjectURL(mindBlob);
+          
+          downloadLink.href = url;
+          downloadLink.download = 'jupiter.mind';
+          downloadLink.style.display = 'inline-block';
+          instructionText.style.display = 'block';
+          
+          statusText.textContent = 'Compilação concluída! Clique no botão abaixo para baixar.';
+        } catch (error) {
+          console.error('Erro ao compilar:', error);
+          statusText.textContent = `Erro na compilação: ${error.message || 'Falha desconhecida'}`;
+        } finally {
+          generateButton.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

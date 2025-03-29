@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia AR - Sistema Solar</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      padding: 20px;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #3498db;
+    }
+    h2 {
+      color: #2980b9;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    h3 {
+      color: #16a085;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+    ul, ol {
+      margin-bottom: 20px;
+      margin-left: 20px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    .container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .tip {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    .warning {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    code {
+      background-color: #f7f7f7;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    }
+    pre {
+      background-color: #f7f7f7;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 15px 0;
+    }
+    .btn {
+      display: inline-block;
+      background-color: #3498db;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 10px 5px;
+    }
+    .btn:hover {
+      background-color: #2980b9;
+    }
+    .image-comparison {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 20px 0;
+      justify-content: center;
+    }
+    .image-item {
+      width: 45%;
+      min-width: 250px;
+      max-width: 400px;
+      text-align: center;
+    }
+    .image-item img {
+      max-width: 100%;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+    }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-around;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Guia de Solução de Problemas - AR Sistema Solar</h1>
+    
+    <h2>Índice</h2>
+    <ol>
+      <li><a href="#introduction">Introdução</a></li>
+      <li><a href="#troubleshooting">Solucionando Problemas de Detecção</a></li>
+      <li><a href="#markers">Criando Bons Marcadores</a></li>
+      <li><a href="#mind-files">Arquivos .mind</a></li>
+      <li><a href="#testing">Testando o Sistema</a></li>
+      <li><a href="#deployment">Implantação</a></li>
+      <li><a href="#next-steps">Próximos Passos</a></li>
+    </ol>
+    
+    <div class="navigation">
+      <a href="index.html" class="btn">Aplicativo Principal</a>
+      <a href="test-marker.html" class="btn">Teste de Marcadores</a>
+      <a href="generate-mind-file.html" class="btn">Gerar Arquivo .mind</a>
+    </div>
+  </div>
+  
+  <div class="container" id="introduction">
+    <h2>1. Introdução</h2>
+    <p>Este projeto utiliza MindAR.js para criar uma experiência de Realidade Aumentada com planetas do sistema solar. Se você está enfrentando problemas com a detecção de marcadores, este guia fornecerá soluções e dicas para melhorar a experiência.</p>
+    
+    <div class="tip">
+      <strong>Dica:</strong> Para que a AR funcione corretamente, você precisa de:
+      <ul>
+        <li>Acesso via HTTPS (necessário para acesso à câmera)</li>
+        <li>Iluminação adequada para visualizar os marcadores</li>
+        <li>Marcadores com boa qualidade e contraste</li>
+        <li>Um dispositivo com câmera e suporte a WebGL</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="container" id="troubleshooting">
+    <h2>2. Solucionando Problemas de Detecção</h2>
+    
+    <h3>Problemas Comuns e Soluções</h3>
+    <table>
+      <tr>
+        <th>Problema</th>
+        <th>Possível Causa</th>
+        <th>Solução</th>
+      </tr>
+      <tr>
+        <td>Câmera ativada mas não detecta marcadores</td>
+        <td>Arquivo .mind vazio ou inválido</td>
+        <td>Regenerar o arquivo .mind usando o gerador fornecido</td>
+      </tr>
+      <tr>
+        <td>Erro ao iniciar o sistema AR</td>
+        <td>Acesso à câmera negado ou HTTPS não disponível</td>
+        <td>Garantir permissões de câmera e acessar via HTTPS</td>
+      </tr>
+      <tr>
+        <td>Detecção intermitente</td>
+        <td>Iluminação inadequada ou marcador de baixa qualidade</td>
+        <td>Melhorar iluminação e usar marcadores com mais contraste</td>
+      </tr>
+      <tr>
+        <td>Modelo 3D não aparece</td>
+        <td>Problema ao carregar o modelo GLB</td>
+        <td>Use o botão "Alternar Modelo 3D" para usar o modelo de fallback</td>
+      </tr>
+    </table>
+    
+    <h3>Verificações Básicas</h3>
+    <ol>
+      <li>Certifique-se de que o arquivo <code>jupiter.mind</code> existe em <code>/targets</code> e não está vazio</li>
+      <li>Verifique se há mensagens de erro no console do navegador (F12 ou Inspecionar)</li>
+      <li>Teste o botão "Testar Detecção" para verificar se o modelo e as informações aparecem corretamente</li>
+      <li>Teste a página <code>test-marker.html</code> para verificar se a detecção funciona com marcadores conhecidos</li>
+    </ol>
+  </div>
+  
+  <div class="container" id="markers">
+    <h2>3. Criando Bons Marcadores</h2>
+    
+    <p>O reconhecimento AR depende muito da qualidade dos marcadores. Ao fotografar os planetas de isopor, siga estas diretrizes:</p>
+    
+    <h3>Características de Bons Marcadores</h3>
+    <ul>
+      <li><strong>Alto contraste</strong> - Diferença clara entre áreas claras e escuras</li>
+      <li><strong>Rico em detalhes</strong> - Muitos padrões, texturas e características identificáveis</li>
+      <li><strong>Assimetria</strong> - Padrões que não se repetem exatamente</li>
+      <li><strong>Bordas nítidas</strong> - Contornos bem definidos</li>
+      <li><strong>Sem reflexos</strong> - Evite superfícies brilhantes que causem reflexos</li>
+    </ul>
+    
+    <div class="image-comparison">
+      <div class="image-item">
+        <img src="https://hiukim.github.io/mind-ar-js-doc/assets/images/multi-targets-bad.png" alt="Marcador Ruim">
+        <p>Marcador ruim: pouco contraste, poucos detalhes</p>
+      </div>
+      <div class="image-item">
+        <img src="https://hiukim.github.io/mind-ar-js-doc/assets/images/multi-targets-good.png" alt="Marcador Bom">
+        <p>Marcador bom: alto contraste, muitos detalhes</p>
+      </div>
+    </div>
+    
+    <h3>Dicas para Fotografar Planetas de Isopor</h3>
+    <ol>
+      <li>Use boa iluminação (luz natural ou difusa)</li>
+      <li>Evite reflexos diretos na superfície</li>
+      <li>Pinte detalhes com alto contraste (ex: manchas, anéis, etc.)</li>
+      <li>Fotografe contra um fundo de cor neutra</li>
+      <li>Capture de múltiplos ângulos para escolher a melhor imagem</li>
+      <li>Use uma resolução média (600-1200px) - nem muito grande nem muito pequena</li>
+      <li>Garanta que a imagem esteja nítida e focada</li>
+    </ol>
+    
+    <div class="warning">
+      <strong>Atenção:</strong> Superfícies muito uniformes ou com padrões repetitivos não funcionam bem como marcadores. Assegure-se de pintar características distintas em cada planeta.
+    </div>
+  </div>
+  
+  <div class="container" id="mind-files">
+    <h2>4. Arquivos .mind</h2>
+    
+    <p>Os arquivos .mind contêm os dados processados das imagens para reconhecimento. Existem algumas formas de criá-los:</p>
+    
+    <h3>Opção 1: Gerador Online</h3>
+    <p>Use a página <a href="generate-mind-file.html">generate-mind-file.html</a> incluída neste projeto para criar seu arquivo .mind diretamente no navegador.</p>
+    
+    <h3>Opção 2: Compilador Oficial MindAR</h3>
+    <ol>
+      <li>Acesse <a href="https://hiukim.github.io/mind-ar-js-doc/tools/compile/" target="_blank">https://hiukim.github.io/mind-ar-js-doc/tools/compile/</a></li>
+      <li>Faça upload das imagens dos planetas</li>
+      <li>Clique em "Compile" e aguarde o processamento</li>
+      <li>Baixe o arquivo .mind gerado</li>
+      <li>Coloque o arquivo na pasta <code>targets/jupiter.mind</code></li>
+    </ol>
+    
+    <h3>Opção 3: Usar Marcadores de Exemplo Temporariamente</h3>
+    <p>Se você estiver com dificuldades, pode temporariamente usar marcadores conhecidos para testar:</p>
+    <pre>// No index.html, mude a linha:
+mindar-image="imageTargetSrc: targets/jupiter.mind; ..."
+
+// Para:
+mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.1/examples/image-tracking/assets/card-example/card.mind; ..."</pre>
+  </div>
+  
+  <div class="container" id="testing">
+    <h2>5. Testando o Sistema</h2>
+    
+    <p>Para uma experiência completa de testes, siga esta sequência:</p>
+    
+    <ol>
+      <li>Primeiro, teste a página <code><a href="test-marker.html">test-marker.html</a></code> com os marcadores de exemplo para confirmar que a detecção básica funciona no seu dispositivo</li>
+      <li>Se os marcadores de exemplo funcionarem, gere seu próprio arquivo .mind usando o <code><a href="generate-mind-file.html">generate-mind-file.html</a></code></li>
+      <li>Coloque o arquivo gerado em <code>targets/jupiter.mind</code></li>
+      <li>Teste a aplicação principal (<code>index.html</code>) com seus marcadores personalizados</li>
+    </ol>
+    
+    <div class="tip">
+      <strong>Dica:</strong> Ao testar, use o botão "Testar Detecção" para verificar se o modelo e as informações são exibidos corretamente, independentemente do reconhecimento do marcador.
+    </div>
+  </div>
+
+  <div class="container" id="deployment">
+    <h2>6. Implantação</h2>
+    
+    <h3>Opção 1: GitHub Pages</h3>
+    <ol>
+      <li>Crie um repositório GitHub para o projeto</li>
+      <li>Faça o upload de todos os arquivos para o repositório</li>
+      <li>Vá em Settings > Pages</li>
+      <li>Selecione o branch main como fonte</li>
+      <li>Clique em Save</li>
+      <li>Seu site estará disponível em: <code>https://seu-usuario.github.io/nome-do-repositorio/</code></li>
+    </ol>
+    
+    <h3>Opção 2: Vercel</h3>
+    <ol>
+      <li>Crie uma conta em <a href="https://vercel.com" target="_blank">vercel.com</a></li>
+      <li>Instale o Vercel CLI: <code>npm install -g vercel</code></li>
+      <li>Na pasta do projeto, execute: <code>vercel login</code></li>
+      <li>Em seguida, execute: <code>vercel</code></li>
+      <li>Siga as instruções para concluir a implantação</li>
+    </ol>
+    
+    <div class="warning">
+      <strong>Importante:</strong> Para que a AR funcione em dispositivos móveis, é necessário que o site seja servido via HTTPS. Tanto GitHub Pages quanto Vercel fornecem isso automaticamente.
+    </div>
+  </div>
+  
+  <div class="container" id="next-steps">
+    <h2>7. Próximos Passos</h2>
+    
+    <p>Quando conseguir fazer o reconhecimento do primeiro planeta funcionar:</p>
+    
+    <ol>
+      <li>Expanda para os outros planetas um por um, testando cada adição</li>
+      <li>Adicione mais modelos 3D na pasta <code>assets/models/</code></li>
+      <li>Para vários planetas, você pode:
+        <ul>
+          <li>Criar um arquivo .mind único com todas as imagens de planetas</li>
+          <li>Ou criar arquivos .mind separados e alternar entre eles</li>
+        </ul>
+      </li>
+      <li>Personalize os estilos e informações para cada planeta</li>
+    </ol>
+    
+    <h3>Links Úteis</h3>
+    <ul>
+      <li><a href="https://github.com/hiukim/mind-ar-js" target="_blank">Documentação MindAR.js</a></li>
+      <li><a href="https://aframe.io/docs/1.3.0/introduction/" target="_blank">Documentação A-Frame</a></li>
+      <li><a href="https://sketchfab.com/search?q=planet&type=models" target="_blank">Modelos 3D de planetas no Sketchfab</a></li>
+    </ul>
+    
+    <div class="navigation">
+      <a href="index.html" class="btn">Voltar ao Aplicativo Principal</a>
+      <a href="test-marker.html" class="btn">Teste de Marcadores</a>
+      <a href="generate-mind-file.html" class="btn">Gerar Arquivo .mind</a>
+    </div>
+  </div>
+  
+  <footer>
+    <p>Sistema Solar AR - Projeto de Guilherme</p>
+    <p><small>Baseado em MindAR.js e A-Frame</small></p>
+  </footer>
+</body>
+</html>

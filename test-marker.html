@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste de Marcador AR</title>
+  
+  <!-- Carrega o CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Carrega as bibliotecas A-Frame e MindAR -->
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+  <!-- Interface sobreposta da AR -->
+  <div class="ar-overlay">
+    <div id="info-box" class="info-container">
+      <h2 id="marker-name">Teste de Marcador</h2>
+      <p id="marker-description">Use um dos marcadores de exemplo para testar.</p>
+    </div>
+    
+    <!-- Status de detecção para debugging -->
+    <div id="detection-status" class="detection-status">
+      Aguardando reconhecimento do marcador...
+    </div>
+    
+    <!-- Instruções -->
+    <div class="instructions" style="display:block; pointer-events:auto;">
+      <p>Use um dos seguintes marcadores para testar:</p>
+      <a href="https://hiukim.github.io/mind-ar-js-doc/samples/card-example/cards.png" target="_blank" style="color: white; text-decoration: underline;">
+        Ver Marcadores de Teste
+      </a>
+    </div>
+  </div>
+  
+  <!-- Cena A-Frame para AR usando o marcador de exemplo do MindAR -->
+  <a-scene
+    mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.1/examples/image-tracking/assets/card-example/card.mind; autoStart: true; uiScanning: true;"
+    color-space="sRGB"
+    renderer="colorManagement: true; antialias: true;"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+    
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    
+    <!-- Entidade para o primeiro marcador de exemplo -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <!-- Cubo 3D simples para visualizar quando o marcador for detectado -->
+      <a-box position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" color="red">
+        <a-animation attribute="rotation" to="0 360 0" dur="3000" easing="linear" repeat="indefinite"></a-animation>
+      </a-box>
+    </a-entity>
+    
+    <!-- Entidade para o segundo marcador de exemplo -->
+    <a-entity mindar-image-target="targetIndex: 1">
+      <!-- Esfera 3D simples para visualizar quando o marcador for detectado -->
+      <a-sphere position="0 0 0" radius="0.5" color="blue">
+        <a-animation attribute="rotation" to="360 360 0" dur="3000" easing="linear" repeat="indefinite"></a-animation>
+      </a-sphere>
+    </a-entity>
+    
+    <!-- Entidade para o terceiro marcador de exemplo -->
+    <a-entity mindar-image-target="targetIndex: 2">
+      <!-- Cilindro 3D simples para visualizar quando o marcador for detectado -->
+      <a-cylinder position="0 0 0" height="1" radius="0.5" color="green">
+        <a-animation attribute="rotation" to="0 360 360" dur="3000" easing="linear" repeat="indefinite"></a-animation>
+      </a-cylinder>
+    </a-entity>
+  </a-scene>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const statusElement = document.querySelector('#detection-status');
+      const infoBox = document.querySelector('#info-box');
+      const markerName = document.querySelector('#marker-name');
+      const markerDescription = document.querySelector('#marker-description');
+      
+      // Nome dos marcadores de exemplo
+      const markerNames = ['Marcador com Hiro', 'Marcador com Kanji', 'Marcador com Padrão'];
+      
+      // Configurar eventos para cada marcador
+      for (let i = 0; i < 3; i++) {
+        const targetEntity = document.querySelector(`[mindar-image-target="targetIndex: ${i}"]`);
+        if (targetEntity) {
+          // Quando o marcador é detectado
+          targetEntity.addEventListener('targetFound', () => {
+            console.log(`Marcador ${i} (${markerNames[i]}) detectado!`);
+            statusElement.textContent = `Marcador ${i + 1} detectado!`;
+            statusElement.classList.add('detected');
+            
+            // Mostrar informações
+            markerName.textContent = markerNames[i];
+            markerDescription.textContent = `Marcador de teste ${i + 1} reconhecido com sucesso!`;
+            infoBox.classList.add('visible');
+          });
+          
+          // Quando o marcador é perdido
+          targetEntity.addEventListener('targetLost', () => {
+            console.log(`Marcador ${i} perdido`);
+            statusElement.textContent = 'Aguardando reconhecimento do marcador...';
+            statusElement.classList.remove('detected');
+            infoBox.classList.remove('visible');
+          });
+        }
+      }
+      
+      // Verificar eventos de sistema de AR
+      const sceneEl = document.querySelector('a-scene');
+      sceneEl.addEventListener('loaded', function () {
+        console.log('A-Frame scene carregada');
+        const arSystem = sceneEl.systems['mindar-image-system'];
+        
+        arSystem.el.addEventListener('arReady', () => {
+          console.log('AR está pronto!');
+          statusElement.textContent = 'AR pronta - aponte para um marcador de teste';
+          statusElement.classList.add('ready');
+        });
+        
+        arSystem.el.addEventListener('arError', (error) => {
+          console.error('Erro de AR:', error);
+          statusElement.textContent = 'Erro na AR: Verifique permissões de câmera';
+          statusElement.classList.add('error');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
