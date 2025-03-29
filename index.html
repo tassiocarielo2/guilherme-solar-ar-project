@@ -19,54 +19,48 @@
   <!-- Interface sobreposta da AR -->
   <div class="ar-overlay">
     <div id="info-box" class="info-container">
-      <h2 id="planet-name">Aponte para um planeta</h2>
-      <p id="planet-description">Informações sobre o planeta aparecerão aqui quando um marcador for detectado.</p>
+      <h2 id="planet-name">Aponte para Júpiter</h2>
+      <p id="planet-description">Informações sobre Júpiter aparecerão aqui quando o marcador for detectado.</p>
+    </div>
+    
+    <!-- Status de detecção para debugging -->
+    <div id="detection-status" class="detection-status">
+      Aguardando reconhecimento de Júpiter...
+    </div>
+    
+    <!-- Botão de teste para simular detecção -->
+    <div class="debug-controls">
+      <button id="test-detection">Testar Detecção (Júpiter)</button>
     </div>
   </div>
   
   <!-- Cena A-Frame para AR -->
   <a-scene
-    mindar-image="imageTargetSrc: targets/planets.mind;"
+    mindar-image="imageTargetSrc: targets/jupiter.mind; autoStart: true; uiScanning: true; maxTrack: 1;"
     color-space="sRGB"
-    renderer="colorManagement: true, physicallyCorrectLights: true"
+    renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false">
     
     <!-- Câmera com componente raycaster para interação -->
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
     
-    <!-- Entidades para cada planeta - Serão controladas pelo main.js -->
+    <!-- Entidade para Júpiter -->
     <a-entity mindar-image-target="targetIndex: 0">
-      <a-gltf-model id="mercurio-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/mercury.glb"></a-gltf-model>
-    </a-entity>
-    
-    <a-entity mindar-image-target="targetIndex: 1">
-      <a-gltf-model id="venus-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/venus.glb"></a-gltf-model>
-    </a-entity>
-    
-    <a-entity mindar-image-target="targetIndex: 2">
-      <a-gltf-model id="terra-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/earth.glb"></a-gltf-model>
-    </a-entity>
-    
-    <a-entity mindar-image-target="targetIndex: 3">
-      <a-gltf-model id="marte-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/mars.glb"></a-gltf-model>
-    </a-entity>
-    
-    <a-entity mindar-image-target="targetIndex: 4">
       <a-gltf-model id="jupiter-model" position="0 0 0" rotation="0 0 0" scale="0.7 0.7 0.7" src="assets/models/jupiter.glb"></a-gltf-model>
     </a-entity>
     
-    <a-entity mindar-image-target="targetIndex: 5">
-      <a-gltf-model id="saturno-model" position="0 0 0" rotation="0 0 0" scale="0.6 0.6 0.6" src="assets/models/saturn.glb"></a-gltf-model>
+    <!-- Comentado para implementação futura
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-gltf-model id="mercurio-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/mercury.glb"></a-gltf-model>
     </a-entity>
     
-    <a-entity mindar-image-target="targetIndex: 6">
-      <a-gltf-model id="urano-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/uranus.glb"></a-gltf-model>
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-gltf-model id="venus-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/venus.glb"></a-gltf-model>
     </a-entity>
     
-    <a-entity mindar-image-target="targetIndex: 7">
-      <a-gltf-model id="netuno-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/neptune.glb"></a-gltf-model>
-    </a-entity>
+    E assim por diante para outros planetas...
+    -->
   </a-scene>
 </body>
 </html>
