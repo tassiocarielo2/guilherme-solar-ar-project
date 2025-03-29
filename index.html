@@ -8,10 +8,11 @@
   <!-- Carrega o CSS -->
   <link rel="stylesheet" href="style.css">
   
-  <!-- Carrega as bibliotecas A-Frame e MindAR -->
-  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image-aframe.prod.js"></script>
-  
+  <!-- Carrega as bibliotecas MindAR e A-Frame na ordem correta conforme documentação -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.5/dist/mindar-image.prod.js"></script>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.5/dist/mindar-image-aframe.prod.js"></script>
+
   <!-- Componente de modelo fallback para planetas -->
   <script src="assets/models/jupiter-fallback.js"></script>
   
