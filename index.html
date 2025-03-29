@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Solar AR</title>
+  
+  <!-- Carrega o CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Carrega as bibliotecas A-Frame e MindAR -->
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-image-aframe.prod.js"></script>
+  
+  <!-- Carrega o script principal -->
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <!-- Interface sobreposta da AR -->
+  <div class="ar-overlay">
+    <div id="info-box" class="info-container">
+      <h2 id="planet-name">Aponte para um planeta</h2>
+      <p id="planet-description">Informações sobre o planeta aparecerão aqui quando um marcador for detectado.</p>
+    </div>
+  </div>
+  
+  <!-- Cena A-Frame para AR -->
+  <a-scene
+    mindar-image="imageTargetSrc: targets/planets.mind;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+    
+    <!-- Câmera com componente raycaster para interação -->
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    
+    <!-- Entidades para cada planeta - Serão controladas pelo main.js -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-gltf-model id="mercurio-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/mercury.glb"></a-gltf-model>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-gltf-model id="venus-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/venus.glb"></a-gltf-model>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-gltf-model id="terra-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/earth.glb"></a-gltf-model>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 3">
+      <a-gltf-model id="marte-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/mars.glb"></a-gltf-model>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 4">
+      <a-gltf-model id="jupiter-model" position="0 0 0" rotation="0 0 0" scale="0.7 0.7 0.7" src="assets/models/jupiter.glb"></a-gltf-model>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 5">
+      <a-gltf-model id="saturno-model" position="0 0 0" rotation="0 0 0" scale="0.6 0.6 0.6" src="assets/models/saturn.glb"></a-gltf-model>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 6">
+      <a-gltf-model id="urano-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/uranus.glb"></a-gltf-model>
+    </a-entity>
+    
+    <a-entity mindar-image-target="targetIndex: 7">
+      <a-gltf-model id="netuno-model" position="0 0 0" rotation="0 0 0" scale="0.5 0.5 0.5" src="assets/models/neptune.glb"></a-gltf-model>
+    </a-entity>
+  </a-scene>
+</body>
+</html>
